@@ -22,6 +22,10 @@ The DataDisplay class is a dynamic PHP data table renderer built with Sweet Aler
 
 ### 🔐 CSRF protection
 
+### To get Started Run This on Terminal
+```php
+composer require revaycolizer/data-display
+```
 ### Instantiate the Component Using Doctrine For Data Fetching
 
 ```php
