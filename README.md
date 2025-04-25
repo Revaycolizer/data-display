@@ -2,6 +2,12 @@
 
 The DataDisplay class is a dynamic PHP data table renderer built with Sweet Alert and Bootstrap. It supports adding, editing, deleting, searching, joining tables, and pagination — all from a fluent interface.
 
+### Required Packages For The Magic To Work
+1. Sweet Alert 2
+2. DataTable
+3. BootStrap 5
+4. Doctrine (optional)
+
 ### ✨ Features
 
 🗃 Dynamic table rendering with Bootstrap
