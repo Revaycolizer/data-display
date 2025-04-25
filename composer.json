@@ -1,0 +1,19 @@
+{
+    "name": "revaycolizer/data-display",
+    "description": "The DataDisplay class is a dynamic PHP data table renderer built with Sweet Alert and Bootstrap. It supports adding, editing, deleting, searching, joining tables, and pagination — all from a fluent interface.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Revaycolizer\\DataDisplay\\": "src/",
+            "App\\Types\\": "types/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Revaycolizer",
+            "email": "albinuslucas@gmail.com"
+        }
+    ],
+    "require": {}
+}
