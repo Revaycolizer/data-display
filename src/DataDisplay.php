@@ -600,16 +600,16 @@ class DataDisplay
                 $value = htmlspecialchars($_POST[$column] ?? "");
 
                 if ($config["type"] === "input") {
-                    echo "<div class='col'>
+                    echo "<div class='col-auto'>
                               <label for='$column' class='form-label'>$label</label>
-                              <input type='text' class='form-control' name='$column' id='$column' value='" .
+                              <input type='text' class='form-control form-control-sm' name='$column' id='$column' value='" .
                         htmlspecialchars($value) .
                         "'>
                           </div>";
                 } elseif ($config["type"] === "select") {
-                    echo "<div class='col'>
+                    echo "<div class='col-auto'>
                               <label for='$column' class='form-label'>$label</label>
-                              <select name='$column' id='$column' class='form-control'>
+                              <select name='$column' id='$column' class='form-control form-control-sm'>
                                   <option value=''>-- Select --</option>";
                     foreach ($config["options"] as $opt) {
                         $val = $opt[$config["value_field"]];
