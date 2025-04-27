@@ -1,5 +1,8 @@
 <?php
+
 namespace Revaycolizer\DataDisplay;
+
+use App\Types\ActionsButtonMode;
 use App\Types\DataSourceType;
 use InvalidArgumentException;
 
@@ -44,14 +47,17 @@ class DataDisplay
     private $addDialogSize;
     private $editDialogSize;
 
+    private $actionsButtonMode = ActionsButtonMode::DEFAULT;
+
     /**
      * @param 'doctrine'|'classes' $dataSource
      */
     public function __construct(
-        object $entityManager = null,
-        string $entityName,
+        object         $entityManager = null,
+        string         $entityName,
         DataSourceType $dataSource = DataSourceType::DOCTRINE
-    ) {
+    )
+    {
         $this->dataSource = $dataSource;
 
         if ($dataSource === DataSourceType::DOCTRINE) {
@@ -82,27 +88,37 @@ class DataDisplay
         $this->token = $this->generateCsrfToken();
     }
 
+    public function setActionsButtonMode(ActionsButtonMode $mode = ActionsButtonMode::DEFAULT): self
+    {
+        $this->actionsButtonMode = $mode;
+        return $this;
+    }
+
+
     public function searchable(array $columns)
     {
         $this->searchableColumns = $columns;
         return $this;
     }
-    
-    public function setAddDialogSize(string $addDialogSize){
+
+    public function setAddDialogSize(string $addDialogSize)
+    {
         $this->addDialogSize = $addDialogSize;
         return $this;
     }
-    
-    public function setEditDialogSize(string $editDialogSize){
+
+    public function setEditDialogSize(string $editDialogSize)
+    {
         $this->editDialogSize = $editDialogSize;
         return $this;
     }
 
     public static function create(
-        object $entityManager = null,
-        string $entityName = null,
+        object         $entityManager = null,
+        string         $entityName = null,
         DataSourceType $dataSource = DataSourceType::DOCTRINE
-    ): self {
+    ): self
+    {
         if ($dataSource === DataSourceType::DOCTRINE) {
             if (
                 !interface_exists(\Doctrine\ORM\EntityManagerInterface::class)
@@ -145,6 +161,7 @@ class DataDisplay
         $this->editButtonConditionCallback = $callback;
         return $this;
     }
+
     public function setEditButtonConditions(array $conditions)
     {
         $this->editButtonConditions = $conditions;
@@ -200,11 +217,12 @@ class DataDisplay
     }
 
     public function addColumnBeforeActions(
-        string $key,
+        string   $key,
         callable $callback,
-        bool $raw = false,
+        bool     $raw = false,
         callable $visibleWhen = null
-    ): self {
+    ): self
+    {
         $this->columnsBeforeActions[$key] = [
             "callback" => $callback,
             "raw" => $raw,
@@ -214,11 +232,12 @@ class DataDisplay
     }
 
     public function addColumnAfterActions(
-        string $key,
+        string   $key,
         callable $callback,
-        bool $raw = false,
+        bool     $raw = false,
         callable $visibleWhen = null
-    ): self {
+    ): self
+    {
         $this->columnsAfterActions[$key] = [
             "callback" => $callback,
             "raw" => $raw,
@@ -245,7 +264,7 @@ class DataDisplay
 
         return !empty($config["raw"])
             ? $value
-            : htmlspecialchars((string) $value);
+            : htmlspecialchars((string)$value);
     }
 
     private function evaluateCondition($row, $field, $operator, $value)
@@ -312,7 +331,8 @@ class DataDisplay
         $row,
         $conditions,
         $logicOperator = "AND"
-    ) {
+    )
+    {
         $result = $logicOperator === "AND";
 
         foreach ($conditions as $condition) {
@@ -412,9 +432,10 @@ class DataDisplay
     }
 
     public function enablePagination(
-        int $recordsPerPage = 10,
+        int   $recordsPerPage = 10,
         array $columns = []
-    ) {
+    )
+    {
         $this->paginationEnabled = true;
         $this->recordsPerPage = $recordsPerPage;
         $this->paginateColumns = $columns;
@@ -426,7 +447,7 @@ class DataDisplay
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select("COUNT(e.id)")->from($this->entityName, "e");
 
-        return (int) $qb->getQuery()->getSingleScalarResult();
+        return (int)$qb->getQuery()->getSingleScalarResult();
     }
 
     public function setAddButtonLabel(string $label)
@@ -712,24 +733,57 @@ class DataDisplay
             }
 
             if ($this->mode === "default") {
-                echo "<td>";
 
-                if ($canEdit) {
-                    echo "<button class='btn btn-primary btn-sm editBtn' data-id='{$row["id"]}'";
-                    foreach ($this->columnsToEdit as $columnName => $config) {
-                        $value =
-                            isset($row[$columnName]) &&
-                            is_scalar($row[$columnName])
-                                ? htmlspecialchars($row[$columnName])
-                                : "";
-                        echo " data-$columnName='$value'";
-                    }
-                    echo ">Edit</button> ";
-                }
+                switch ($this->actionsButtonMode) {
+                    case ActionsButtonMode::DEFAULT:
+                        echo "<td>";
+                        if ($canEdit) {
+                            echo "<button class='btn btn-primary btn-sm editBtn' data-id='{$row["id"]}'";
+                            foreach ($this->columnsToEdit as $columnName => $config) {
+                                $value =
+                                    isset($row[$columnName]) &&
+                                    is_scalar($row[$columnName])
+                                        ? htmlspecialchars($row[$columnName])
+                                        : "";
+                                echo " data-$columnName='$value'";
+                            }
+                            echo ">Edit</button> ";
+                        }
 
-                echo "
+                        echo "
                       <button class='btn btn-danger btn-sm deleteBtn' data-id='{$row["id"]}'>Delete</button>
                     </td>";
+
+                        break;
+
+                    case ActionsButtonMode::DROPDOWN:
+                        echo "<td>";
+                        echo "<div class='dropdown hover-dropdown'>";
+                        echo "<a href='#' style='text-decoration: none !important;' class='ellipsis-trigger' role='button' data-bs-toggle='dropdown' aria-expanded='false'>";
+                        echo "&#8942;";
+                        echo "</a>";
+                        echo "<ul class='dropdown-menu'>";
+
+                        if ($canEdit) {
+                            echo "<li><a class='dropdown-item editBtn' href='#' data-id='{$row["id"]}'";
+                            foreach ($this->columnsToEdit as $columnName => $config) {
+                                $value = isset($row[$columnName]) && is_scalar($row[$columnName])
+                                    ? htmlspecialchars($row[$columnName])
+                                    : "";
+                                echo " data-$columnName='$value'";
+                            }
+                            echo ">Edit</a></li>";
+                        }
+
+                        echo "<li><a class='dropdown-item deleteBtn' href='#' data-id='{$row["id"]}'>Delete</a></li>";
+                        echo "</ul></div>";
+                        echo "</td>";
+                        break;
+
+
+                }
+
+
             }
 
             foreach ($this->columnsAfterActions as $key => $conf) {
@@ -1106,7 +1160,8 @@ class DataDisplay
         string $title,
         string $message,
         string $icon = "success"
-    ) {
+    )
+    {
         echo '<script>
         document.addEventListener("DOMContentLoaded", function () {
             Swal.fire({
