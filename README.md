@@ -2,12 +2,6 @@
 
 The DataDisplay class is a dynamic PHP data table renderer built with Sweet Alert and Bootstrap. It supports adding, editing, deleting, searching, joining tables, and pagination — all from a fluent interface.
 
-### Required Packages For The Magic To Work
-1. Sweet Alert 2
-2. DataTable
-3. BootStrap 5
-4. Doctrine (optional)
-
 ### ✨ Features
 
 🗃 Dynamic table rendering with Bootstrap
@@ -28,10 +22,6 @@ The DataDisplay class is a dynamic PHP data table renderer built with Sweet Aler
 
 ### 🔐 CSRF protection
 
-### To get Started Run This on Terminal
-```php
-composer require revaycolizer/data-display
-```
 ### Instantiate the Component Using Doctrine For Data Fetching
 
 ```php
@@ -76,7 +66,16 @@ If mode is set to report it will remove the CRUD Buttons(Add,Edit & Delete)
 ```php
  ->setMode("report")
 ```
+### Action Button Modes
+# Default
+```php 
+  ->setActionsButtonMode(ActionsButtonMode::DEFAULT)
+```
 
+# Dropdown
+```php 
+  ->setActionsButtonMode(ActionsButtonMode::DROPDOWN)
+```
 ### 🔧 Configuration
 
 Set Columns to Add
@@ -957,8 +956,43 @@ $dataDisplay->handleRequest($_POST ?? []);
 $dataDisplay->renderDataTable();
 ```
 
-### UPDATING DATABASE schema
+### ✅ Example a Simple Workflow With Action Buttons in Dropdown Mode
+```php 
+$dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES);
 
+$dataDisplay
+    ->setClassFetchDataFunction("all")
+    ->setAddDialogSize("modal-fullscreen")
+    ->setEditDialogSize("modal-fullscreen")
+    ->columnToBeAdded([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Product Name",
+        ],
+        "price" => [
+            "type" => "input",
+            "input_type" => "number",
+            "label" => 'Price ($)',
+        ],
+        "category_id" => [
+            "type" => "select",
+            "label" => "Category",
+            "options" => [],
+            "value_field" => "id",
+            "label_field" => "name",
+        ],
+    ])
+    ->columnsToBeEdited([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Name",
+        ],
+    ])
+    ->setActionsButtonMode(ActionsButtonMode::DROPDOWN)
+    ->valuesToRender(["id", "name"])
+    ->setCustomAddAction("/test")
+    ->setCustomEditAction("/admin");
 ```
-php bin/doctrine orm:schema-tool:update --force --dump-sql
-```
+
