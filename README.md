@@ -1,6 +1,7 @@
 ### 📊 DataDisplay Component
 
-The DataDisplay class is a dynamic PHP data table renderer built with Sweet Alert and Bootstrap. It supports adding, editing, deleting, searching, joining tables, and pagination — all from a fluent interface.
+The DataDisplay class is a dynamic PHP data table renderer built with Sweet Alert and Bootstrap. It supports adding,
+editing, deleting, searching, joining tables, and pagination — all from a fluent interface.
 
 ### ✨ Features
 
@@ -66,16 +67,21 @@ If mode is set to report it will remove the CRUD Buttons(Add,Edit & Delete)
 ```php
  ->setMode("report")
 ```
+
 ### Action Button Modes
+
 # Default
+
 ```php 
   ->setActionsButtonMode(ActionsButtonMode::DEFAULT)
 ```
 
 # Dropdown
+
 ```php 
   ->setActionsButtonMode(ActionsButtonMode::DROPDOWN)
 ```
+
 ### 🔧 Configuration
 
 Set Columns to Add
@@ -233,7 +239,8 @@ OR
 
 (stock > 100 OR category = 'Electronics')
 
-The overall result will be true if either the AND group (name and price) is true AND the OR group (stock or category) is true.
+The overall result will be true if either the AND group (name and price) is true AND the OR group (stock or category) is
+true.
 
 ### Edit Callback Function
 
@@ -241,6 +248,107 @@ Instead of using setEditButtonCondition You can opt to use setEditButtonConditio
 
 ```php
    ->setEditButtonConditionCallback(function ($row) {
+        return $row['price'] > 500;
+    })
+```
+
+### Delete Button Conditions
+
+You can decide to not specify the group operator which by default it will use AND operator as a fallback
+
+```php
+    ->setDeleteButtonConditions([
+        'conditions' => [
+            ['field' => 'name', 'operator' => '=', 'value' => 'rrrooo'],
+            ['field' => 'price', 'operator' => '=', 'value' => '566'],
+        ],
+    ])
+```
+
+## Specifying Group Operator
+
+```php
+    ->setDeleteButtonConditions([
+        'conditions' => [
+            ['field' => 'name', 'operator' => '=', 'value' => 'rrrooo'],
+            ['field' => 'price', 'operator' => '=', 'value' => '566'],
+        ],
+        'group_operator' => 'OR',
+    ])
+```
+
+### How to Set Conditions:
+
+## Case 1: Simple OR condition (Conditions connected by OR):
+
+```php
+
+->setDeleteButtonConditions([
+'conditions' => [
+['field' => 'name', 'operator' => '=', 'value' => 'rrrooo'],
+['field' => 'price', 'operator' => '=', 'value' => '566'],
+],
+'group_operator' => 'OR',
+])
+```
+
+This will return true if either name is equal to 'rrrooo' OR price is equal to 566.
+
+## Case 2: Simple AND condition (Conditions connected by AND):
+
+```php
+->setDeleteButtonConditions([
+'conditions' => [
+['field' => 'name', 'operator' => '=', 'value' => 'rrrooo'],
+['field' => 'price', 'operator' => '=', 'value' => '566'],
+],
+'group_operator' => 'AND',
+])
+```
+
+This will return true if both name is equal to 'rrrooo' AND price is equal to 566.
+
+## Case 3: Mixed AND and OR (More complex logic with groups):
+
+```php
+->setDeleteButtonConditions([
+'groups' => [
+[
+'conditions' => [
+['field' => 'name', 'operator' => '=', 'value' => 'rrrooo'],
+['field' => 'price', 'operator' => '=', 'value' => '566'],
+],
+'group_operator' => 'AND', // Conditions within this group are ANDed
+],
+[
+'conditions' => [
+['field' => 'stock', 'operator' => '>', 'value' => '100'],
+['field' => 'category', 'operator' => '=', 'value' => 'Electronics'],
+],
+'group_operator' => 'OR', // Conditions within this group are ORed
+],
+],
+'group_operator' => 'AND', // Groups themselves are ANDed together
+])
+```
+
+This will evaluate like:
+
+(name = 'rrrooo' AND price = '566')
+
+OR
+
+(stock > 100 OR category = 'Electronics')
+
+The overall result will be true if either the AND group (name and price) is true AND the OR group (stock or category) is
+true.
+
+### Delete Callback Function
+
+Instead of using setEditButtonCondition You can opt to use setEditButtonConditionCallback to provide your own callback
+
+```php
+   ->setDeleteButtonConditionCallback(function ($row) {
         return $row['price'] > 500;
     })
 ```
@@ -321,30 +429,39 @@ Where dataTable is the id of datatable
 ## Actions button Mode
 
 # DropDown
+
 ```php 
  ->setActionsButtonMode(ActionsButtonMode::DROPDOWN)
 ```
 
 # Default
+
 ```php
 ->setActionsButtonMode(ActionsButtonMode::DEFAULT)
 ```
+
 ## View Source Modes
+
 # Link
+
 ```php 
 ->setViewSource(ViewSource::LINK)
 ```
 
 # Modal
+
 ```php 
 ->setViewSource(ViewSource::MODAL)
 ```
+
 ## Custom View Form Header
+
 ```php 
  ->setCustomViewFormHeader("Image")
 ```
 
 ## Values To Show On View Modal
+
 ```php 
   ->setValuesToShowonModal([ "name" => [
         "type" => "input",
@@ -352,6 +469,7 @@ Where dataTable is the id of datatable
         "label" => "Name",
     ],])
 ```
+
 ## View Dialog Size
 
 ```php
@@ -997,6 +1115,7 @@ $dataDisplay->renderDataTable();
 ```
 
 ### ✅ Example a Simple Workflow With Action Buttons in Dropdown Mode
+
 ```php 
 $dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES);
 
@@ -1036,7 +1155,7 @@ $dataDisplay
     ->setCustomEditAction("/admin");
 ```
 
-### ✅ Example a Simple Workflow With View Source(Modal) and Action Button Modes(DropDown) 
+### ✅ Example a Simple Workflow With View Source(Modal) and Action Button Modes(DropDown)
 
 ```php 
 $dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES);
@@ -1100,7 +1219,8 @@ $dataDisplay->handleRequest($_POST ?? []);
 $dataDisplay->renderDataTable();
 ```
 
-### ✅ Example a Simple Workflow With View Source(Link) and Action Button Modes(Default) 
+### ✅ Example a Simple Workflow With View Source(Link) and Action Button Modes(Default)
+
 ```php 
 $dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES);
 
@@ -1142,6 +1262,143 @@ $dataDisplay
         "input_type" => "text",
         "label" => "Name",
     ],])
+    ->valuesToRender(["id", "name"])
+    ->searchable([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Product Name",
+        ],
+        "price" => [
+            "type" => "input",
+            "input_type" => "number",
+            "label" => 'Price ($)',
+        ],
+    ])
+    ->setCustomAddAction("/test")
+    ->setCustomEditAction("/admin");
+
+$dataDisplay->handleRequest($_POST ?? []);
+$dataDisplay->renderDataTable();
+```
+
+### ✅ Example a Simple Workflow With Delete Conditions
+
+```php 
+$dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES);
+
+$dataDisplay
+    ->setClassFetchDataFunction("all")
+    ->setAddDialogSize("modal-fullscreen")
+    ->setEditDialogSize("modal-fullscreen")
+    ->columnToBeAdded([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Product Name",
+        ],
+        "price" => [
+            "type" => "input",
+            "input_type" => "number",
+            "label" => 'Price ($)',
+        ],
+        "category_id" => [
+            "type" => "select",
+            "label" => "Category",
+            "options" => [],
+            "value_field" => "id",
+            "label_field" => "name",
+        ],
+    ])
+    ->columnsToBeEdited([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Name",
+        ],
+    ])
+    ->setViewLink("/test/")
+    ->setViewDialogSize("modal-fullscreen")
+    ->setCustomViewFormHeader("Image")
+    ->setValuesToShowonModal([ "name" => [
+        "type" => "input",
+        "input_type" => "text",
+        "label" => "Name",
+    ],])
+
+     ->setDeleteButtonConditions([
+        'conditions' => [
+            ['field' => 'name', 'operator' => '=', 'value' => 'Books'],
+        ],
+    ])
+    ->valuesToRender(["id", "name"])
+    ->searchable([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Product Name",
+        ],
+        "price" => [
+            "type" => "input",
+            "input_type" => "number",
+            "label" => 'Price ($)',
+        ],
+    ])
+    ->setCustomAddAction("/test")
+    ->setCustomEditAction("/admin");
+
+$dataDisplay->handleRequest($_POST ?? []);
+$dataDisplay->renderDataTable();
+```
+
+### ✅ Example a Simple Workflow With Delete Callback
+
+```php
+$dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES);
+
+$dataDisplay
+    ->setClassFetchDataFunction("all")
+    ->setAddDialogSize("modal-fullscreen")
+    ->setEditDialogSize("modal-fullscreen")
+    ->columnToBeAdded([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Product Name",
+        ],
+        "price" => [
+            "type" => "input",
+            "input_type" => "number",
+            "label" => 'Price ($)',
+        ],
+        "category_id" => [
+            "type" => "select",
+            "label" => "Category",
+            "options" => [],
+            "value_field" => "id",
+            "label_field" => "name",
+        ],
+    ])
+    ->columnsToBeEdited([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Name",
+        ],
+    ])
+
+    ->setViewLink("/test/")
+    ->setViewDialogSize("modal-fullscreen")
+    ->setCustomViewFormHeader("Image")
+    ->setValuesToShowonModal([ "name" => [
+        "type" => "input",
+        "input_type" => "text",
+        "label" => "Name",
+    ],])
+
+    ->setDeleteButtonConditionCallback(function ($row) {
+        return $row["name"] !== 'Books';
+    })
     ->valuesToRender(["id", "name"])
     ->searchable([
         "name" => [

@@ -32,6 +32,9 @@ class DataDisplay
 
     private $editButtonConditionCallback = null;
 
+    private $deleteButtonConditions = [];
+    private $deleteButtonConditionCallback = null;
+
     private $customAddFormRenderer = null;
     private $customEditFormRenderer = null;
 
@@ -60,7 +63,7 @@ class DataDisplay
 
     private $viewLink;
 
-    private $valuesToShowonModal=[];
+    private $valuesToShowonModal = [];
 
     /**
      * @param 'doctrine'|'classes' $dataSource
@@ -205,6 +208,20 @@ class DataDisplay
         return $this;
     }
 
+    public function setDeleteButtonConditions(array $conditions)
+    {
+        $this->deleteButtonConditions = $conditions;
+        return $this;
+    }
+
+
+    public function setDeleteButtonConditionCallback(callable $callback)
+    {
+        $this->deleteButtonConditionCallback = $callback;
+        return $this;
+    }
+
+
     public function setCustomAddFormRenderer(callable $renderer): self
     {
         $this->customAddFormRenderer = $renderer;
@@ -333,9 +350,28 @@ class DataDisplay
         }
     }
 
-    public function evaluateEditConditions($row)
+    private function evaluateEditConditions($row)
     {
         $conditions = $this->editButtonConditions;
+
+        if (isset($conditions["groups"]) && !empty($conditions["groups"])) {
+            return $this->evaluateGroupedConditions(
+                $row,
+                $conditions["groups"],
+                $conditions["group_operator"] ?? "AND"
+            );
+        }
+
+        return $this->evaluateFlatConditions(
+            $row,
+            $conditions["conditions"],
+            $conditions["group_operator"] ?? "AND"
+        );
+    }
+
+    private function evaluateDeleteConditions($row)
+    {
+        $conditions = $this->deleteButtonConditions;
 
         if (isset($conditions["groups"]) && !empty($conditions["groups"])) {
             return $this->evaluateGroupedConditions(
@@ -475,7 +511,7 @@ class DataDisplay
         return $this;
     }
 
-    public function valuesToShowonModal (array $values)
+    public function valuesToShowonModal(array $values)
     {
         $this->valuesToShowonModal = $values;
         return $this;
@@ -773,6 +809,7 @@ class DataDisplay
             }
 
             $canEdit = true;
+            $canDelete = true;
 
             if ($this->editButtonConditionCallback) {
                 $canEdit = call_user_func(
@@ -781,6 +818,15 @@ class DataDisplay
                 );
             } elseif (!empty($this->editButtonConditions)) {
                 $canEdit = $this->evaluateEditConditions($row);
+            }
+
+            if ($this->deleteButtonConditionCallback) {
+                $canDelete = call_user_func(
+                    $this->deleteButtonConditionCallback,
+                    $row
+                );
+            } elseif (!empty($this->deleteButtonConditions)) {
+                $canDelete = $this->evaluateDeleteConditions($row);
             }
 
             foreach ($this->columnsBeforeActions as $key => $conf) {
@@ -804,30 +850,31 @@ class DataDisplay
                             }
                             echo ">Edit</button> ";
                         }
-                        $link = $this->viewLink .$row['id'];
+                        $link = $this->viewLink . $row['id'];
 
                         $columnsToRenderonModal = empty($this->valuesToShowonModal) ? $this->valuesToRender : $this->valuesToShowonModal;
                         switch ($this->viewSource) {
                             case ViewSource::LINK:
                                 echo "<a href='{$link}' class='btn btn-success btn-sm' target='_blank'>View</a>";
                                 break;
-                                case ViewSource::MODAL:
-                                    echo "<button class='btn btn-success btn-sm viewBtn' data-id='{$row["id"]}'";
-                                          foreach ($columnsToRenderonModal as $columnName => $config) {
-                                              $value =
-                                                  isset($row[$columnName]) &&
-                                                  is_scalar($row[$columnName])
-                                                      ? htmlspecialchars($row[$columnName])
-                                                      : "";
-                                              echo " data-$columnName='$value'";
-                                          }
-                                    echo ">View</button>";
-                                    break;
+                            case ViewSource::MODAL:
+                                echo "<button class='btn btn-success btn-sm viewBtn' data-id='{$row["id"]}'";
+                                foreach ($columnsToRenderonModal as $columnName => $config) {
+                                    $value =
+                                        isset($row[$columnName]) &&
+                                        is_scalar($row[$columnName])
+                                            ? htmlspecialchars($row[$columnName])
+                                            : "";
+                                    echo " data-$columnName='$value'";
+                                }
+                                echo ">View</button>";
+                                break;
                         }
 
-                        echo "
+
+                        echo $canDelete ? "
                       <button class='btn btn-danger btn-sm deleteBtn' data-id='{$row["id"]}'>Delete</button>
-                    </td>";
+                    </td>" : "</td>";
 
                         break;
 
@@ -850,7 +897,7 @@ class DataDisplay
                             echo ">Edit</a></li>";
                         }
 
-                        $link = $this->viewLink .$row['id'];
+                        $link = $this->viewLink . $row['id'];
 
                         $columnsToRenderonModal = empty($this->valuesToShowonModal) ? $this->valuesToRender : $this->valuesToShowonModal;
 
@@ -875,7 +922,7 @@ class DataDisplay
                                 break;
                         }
 
-                        echo "<li><a class='dropdown-item deleteBtn' href='#' data-id='{$row["id"]}'>Delete</a></li>";
+                        echo $canDelete ? "<li><a class='dropdown-item deleteBtn' href='#' data-id='{$row["id"]}'>Delete</a></li>" : "";
                         echo "</ul></div>";
                         echo "</td>";
                         break;
