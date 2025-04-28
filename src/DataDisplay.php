@@ -804,7 +804,7 @@ class DataDisplay
                             }
                             echo ">Edit</button> ";
                         }
-                        $link = $this->viewLink . '=' . $row['id'];
+                        $link = $this->viewLink .$row['id'];
 
                         $columnsToRenderonModal = empty($this->valuesToShowonModal) ? $this->valuesToRender : $this->valuesToShowonModal;
                         switch ($this->viewSource) {
@@ -850,7 +850,7 @@ class DataDisplay
                             echo ">Edit</a></li>";
                         }
 
-                        $link = $this->viewLink . '=' . $row['id'];
+                        $link = $this->viewLink .$row['id'];
 
                         $columnsToRenderonModal = empty($this->valuesToShowonModal) ? $this->valuesToRender : $this->valuesToShowonModal;
 
