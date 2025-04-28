@@ -4,6 +4,7 @@ namespace Revaycolizer\DataDisplay;
 
 use App\Types\ActionsButtonMode;
 use App\Types\DataSourceType;
+use App\Types\ViewSource;
 use InvalidArgumentException;
 
 class DataDisplay
@@ -33,11 +34,15 @@ class DataDisplay
 
     private $customAddFormRenderer = null;
     private $customEditFormRenderer = null;
+
+    private $customViewFormRenderer = null;
     private $customAddAction = null;
     private $customEditAction = null;
 
     private $customAddFormHeader = "Add New Record";
     private $customEditFormHeader = "Edit Record";
+
+    private $customViewFormHeader = "View Record";
     private $rowDataTransformer = null;
 
     private $columnsBeforeActions = [];
@@ -47,7 +52,15 @@ class DataDisplay
     private $addDialogSize;
     private $editDialogSize;
 
+    private $viewDialogSize;
+
     private $actionsButtonMode = ActionsButtonMode::DEFAULT;
+
+    private $viewSource = ViewSource::LINK;
+
+    private $viewLink;
+
+    private $valuesToShowonModal=[];
 
     /**
      * @param 'doctrine'|'classes' $dataSource
@@ -94,6 +107,24 @@ class DataDisplay
         return $this;
     }
 
+    public function setViewLink($link): self
+    {
+        $this->viewLink = $link;
+        return $this;
+    }
+
+    public function setValuesToShowonModal(array $values): self
+    {
+        $this->valuesToShowonModal = $values;
+        return $this;
+    }
+
+    public function setViewSource(ViewSource $source = ViewSource::LINK): self
+    {
+        $this->viewSource = $source;
+        return $this;
+    }
+
 
     public function searchable(array $columns)
     {
@@ -110,6 +141,12 @@ class DataDisplay
     public function setEditDialogSize(string $editDialogSize)
     {
         $this->editDialogSize = $editDialogSize;
+        return $this;
+    }
+
+    public function setViewDialogSize(string $viewDialogSize)
+    {
+        $this->viewDialogSize = $viewDialogSize;
         return $this;
     }
 
@@ -180,6 +217,12 @@ class DataDisplay
         return $this;
     }
 
+    public function setCustomViewFormRenderer(callable $renderer): self
+    {
+        $this->customViewFormRenderer = $renderer;
+        return $this;
+    }
+
     public function setCustomAddAction(string $url): self
     {
         $this->customAddAction = $url;
@@ -201,6 +244,12 @@ class DataDisplay
     public function setCustomEditFormHeader(string $header): self
     {
         $this->customEditFormHeader = $header;
+        return $this;
+    }
+
+    public function setCustomViewFormHeader(string $header): self
+    {
+        $this->customViewFormHeader = $header;
         return $this;
     }
 
@@ -426,6 +475,12 @@ class DataDisplay
         return $this;
     }
 
+    public function valuesToShowonModal (array $values)
+    {
+        $this->valuesToShowonModal = $values;
+        return $this;
+    }
+
     private function beautifyColumnName(string $column): string
     {
         return ucwords(str_replace("_", " ", $column));
@@ -488,7 +543,7 @@ class DataDisplay
         return $buttons;
     }
 
-    public function fetchData($page = 1)
+    private function fetchData($page = 1)
     {
         switch ($this->dataSource) {
             case DataSourceType::DOCTRINE:
@@ -749,6 +804,26 @@ class DataDisplay
                             }
                             echo ">Edit</button> ";
                         }
+                        $link = $this->viewLink . '=' . $row['id'];
+
+                        $columnsToRenderonModal = empty($this->valuesToShowonModal) ? $this->valuesToRender : $this->valuesToShowonModal;
+                        switch ($this->viewSource) {
+                            case ViewSource::LINK:
+                                echo "<a href='{$link}' class='btn btn-success btn-sm' target='_blank'>View</a>";
+                                break;
+                                case ViewSource::MODAL:
+                                    echo "<button class='btn btn-success btn-sm viewBtn' data-id='{$row["id"]}'";
+                                          foreach ($columnsToRenderonModal as $columnName => $config) {
+                                              $value =
+                                                  isset($row[$columnName]) &&
+                                                  is_scalar($row[$columnName])
+                                                      ? htmlspecialchars($row[$columnName])
+                                                      : "";
+                                              echo " data-$columnName='$value'";
+                                          }
+                                    echo ">View</button>";
+                                    break;
+                        }
 
                         echo "
                       <button class='btn btn-danger btn-sm deleteBtn' data-id='{$row["id"]}'>Delete</button>
@@ -758,8 +833,8 @@ class DataDisplay
 
                     case ActionsButtonMode::DROPDOWN:
                         echo "<td>";
-                        echo "<div class='dropdown hover-dropdown'>";
-                        echo "<a href='#' style='text-decoration: none !important;' class='ellipsis-trigger' role='button' data-bs-toggle='dropdown' aria-expanded='false'>";
+                        echo "<div class='btn btn-light dropdown hover-dropdown' role='button' data-bs-toggle='dropdown'>";
+                        echo "<a href='#' style='text-decoration: none !important;' class='ellipsis-trigger' aria-expanded='false'>";
                         echo "&#8942;";
                         echo "</a>";
                         echo "<ul class='dropdown-menu'>";
@@ -773,6 +848,31 @@ class DataDisplay
                                 echo " data-$columnName='$value'";
                             }
                             echo ">Edit</a></li>";
+                        }
+
+                        $link = $this->viewLink . '=' . $row['id'];
+
+                        $columnsToRenderonModal = empty($this->valuesToShowonModal) ? $this->valuesToRender : $this->valuesToShowonModal;
+
+                        switch ($this->viewSource) {
+                            case ViewSource::LINK:
+                                echo "<li><a class='dropdown-item' href='{$link}' data-id='{$row["id"]}'>View</a></li>";
+                                break;
+
+                            case ViewSource::MODAL:
+
+                                echo "<li><a class='dropdown-item viewBtn' href='#' data-id='{$row["id"]}'";
+
+                                foreach ($columnsToRenderonModal as $columnName => $config) {
+                                    $value =
+                                        isset($row[$columnName]) &&
+                                        is_scalar($row[$columnName])
+                                            ? htmlspecialchars($row[$columnName])
+                                            : "";
+                                    echo " data-$columnName='$value'";
+                                }
+                                echo ">View</a></li>";
+                                break;
                         }
 
                         echo "<li><a class='dropdown-item deleteBtn' href='#' data-id='{$row["id"]}'>Delete</a></li>";
@@ -805,6 +905,8 @@ class DataDisplay
         $editFormId = $this->tableId . "_editForm";
         $addModalId = $this->tableId . "_addModal";
         $editModalId = $this->tableId . "_editModal";
+        $viewModalId = $this->tableId . "_viewModal";
+        $viewFormId = $this->tableId . "_viewForm";
 
         // --- Add Modal ---
         echo '
@@ -922,6 +1024,58 @@ class DataDisplay
       </div>
     </div>';
 
+        // View Modal
+        echo '
+    <div class="modal fade" id="' .
+            $viewModalId .
+            '" tabindex="-1" aria-labelledby="' .
+            $viewModalId .
+            'Label" aria-hidden="true">
+            <div class="modal-dialog ' . $this->viewDialogSize . '">
+        <div class="modal-content">
+          <form id="' .
+            $viewFormId .
+            '" method="POST" action="' .
+            htmlspecialchars($this->customEditAction ?? "") .
+            '">
+            <input type="hidden" name="' .
+            ($this->customViewFormRenderer ? "token" : "csrf_token") .
+            '" value="' .
+            htmlspecialchars($this->token) .
+            '">
+            <input type="hidden" id="' .
+            $viewModalId .
+            'editId" name="id" value="">
+
+            <input type="hidden" name="form_action" value="edit">
+            <div class="modal-header">
+              <h5 class="modal-title" id="' .
+            $viewModalId .
+            'Label">' .
+            $this->customViewFormHeader .
+            '</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="' .
+            $viewFormId .
+            'Body">';
+
+        if (!$this->customViewFormRenderer) {
+        } else {
+            call_user_func($this->customViewFormRenderer);
+        }
+
+        //              <button type="submit" class="btn btn-primary">Save changes</button>
+//              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        echo '  </div>
+            <div class="modal-footer">
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>';
+
         // --- Scripts ---
         echo '<script>
     $(document).ready(function () {
@@ -938,7 +1092,106 @@ class DataDisplay
             });
         }
 
-        $(".editBtn").click(function() {
+        $(".viewBtn").click(function() {
+            var id = $(this).data("id");
+
+            ';
+
+        $columnsToRender = empty($this->valuesToShowonModal) ? $this->valuesToRender : $this->valuesToShowonModal;
+        if (!$this->customViewFormRenderer) {
+            echo '$("#' . $viewFormId . 'Body").empty();';
+        }
+        if ($this->customViewFormRenderer) {
+            foreach ($columnsToRender as $column => $config) {
+                echo '$("#' .
+                    $viewModalId .
+                    $column .
+                    '").val($(this).data("' .
+                    $column .
+                    '"));' .
+                    "\n";
+            }
+            echo '$("#' . $viewModalId . 'viewId").val(id);';
+        } else {
+            foreach ($columnsToRender as $column => $config) {
+                $label = $config["label"] ?? ucfirst($column);
+                $selectLabel = htmlspecialchars(
+                    $config["label"] ?? ucfirst($column),
+                    ENT_QUOTES
+                );
+                echo "var $column = $(this).data('$column');";
+                if ($config["type"] === "input") {
+                    $inputType = $config["input_type"] ?? "text";
+                    echo '$("#' .
+                        $viewFormId .
+                        'Body").append(
+                    `<div class="mb-3">
+                        <label for="' .
+                        $column .
+                        '" class="form-label">' .
+                        $label .
+                        '</label>
+                        <input type="' .
+                        $inputType .
+                        '" class="form-control" id="' .
+                        $column .
+                        '" name="' .
+                        $column .
+                        '" value="` + ' .
+                        $column .
+                        ' + `" required>
+                    </div>`
+                );';
+                } elseif ($config["type"] === "select") {
+                    echo "var selectedVal = " . $column . ";";
+                    echo "var options = `";
+                    foreach ($config["options"] as $option) {
+                        $value = htmlspecialchars(
+                            $option[$config["value_field"]] ?? $option,
+                            ENT_QUOTES
+                        );
+                        $label = htmlspecialchars(
+                            $option[$config["label_field"]] ?? $option,
+                            ENT_QUOTES
+                        );
+                        echo "<option value='$value' \${selectedVal == \"$value\" ? 'selected' : ''}>$label</option>";
+                    }
+                    echo "`;";
+                    echo '$("#' .
+                        $viewFormId .
+                        'Body").append(
+                    `<div class="mb-3">
+                        <label for="' .
+                        $column .
+                        '" class="form-label">' .
+                        $selectLabel .
+                        '</label>
+                        <select class="form-control" id="' .
+                        $column .
+                        '" name="' .
+                        $column .
+                        '" required>` + options + `</select>
+                    </div>`
+                );
+                $("#' .
+                        $column .
+                        '").val(' .
+                        $column .
+                        ");";
+                }
+            }
+
+            echo '$("#' . $viewModalId . 'viewId").val(id);';
+        }
+
+        echo '
+            var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("' .
+            $viewModalId .
+            '"));
+            modal.show();
+        });
+        
+            $(".editBtn").click(function() {
             var id = $(this).data("id");
 
             ';

@@ -318,6 +318,46 @@ Where dataTable is the id of datatable
 ->setEditDialogSize("modal-fullscreen")
 ```
 
+## Actions button Mode
+
+# DropDown
+```php 
+ ->setActionsButtonMode(ActionsButtonMode::DROPDOWN)
+```
+
+# Default
+```php
+->setActionsButtonMode(ActionsButtonMode::DEFAULT)
+```
+## View Source Modes
+# Link
+```php 
+->setViewSource(ViewSource::LINK)
+```
+
+# Modal
+```php 
+->setViewSource(ViewSource::MODAL)
+```
+## Custom View Form Header
+```php 
+ ->setCustomViewFormHeader("Image")
+```
+
+## Values To Show On View Modal
+```php 
+  ->setValuesToShowonModal([ "name" => [
+        "type" => "input",
+        "input_type" => "text",
+        "label" => "Name",
+    ],])
+```
+## View Dialog Size
+
+```php
+->setViewDialogSize("modal-fullscreen")
+```
+
 ## Enable Search
 
 ```php
@@ -996,3 +1036,127 @@ $dataDisplay
     ->setCustomEditAction("/admin");
 ```
 
+### ✅ Example a Simple Workflow With View Source(Modal) and Action Button Modes(DropDown) 
+
+```php 
+$dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES);
+
+$dataDisplay
+    ->setClassFetchDataFunction("all")
+    ->setAddDialogSize("modal-fullscreen")
+    ->setEditDialogSize("modal-fullscreen")
+    ->columnToBeAdded([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Product Name",
+        ],
+        "price" => [
+            "type" => "input",
+            "input_type" => "number",
+            "label" => 'Price ($)',
+        ],
+        "category_id" => [
+            "type" => "select",
+            "label" => "Category",
+            "options" => [],
+            "value_field" => "id",
+            "label_field" => "name",
+        ],
+    ])
+    ->columnsToBeEdited([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Name",
+        ],
+    ])
+    ->setActionsButtonMode(ActionsButtonMode::DROPDOWN)
+    ->setViewSource(ViewSource::MODAL)
+    ->setViewDialogSize("modal-fullscreen")
+    ->setCustomViewFormHeader("Image")
+    ->setValuesToShowonModal([ "name" => [
+        "type" => "input",
+        "input_type" => "text",
+        "label" => "Name",
+    ],])
+    ->valuesToRender(["id", "name"])
+    ->searchable([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Product Name",
+        ],
+        "price" => [
+            "type" => "input",
+            "input_type" => "number",
+            "label" => 'Price ($)',
+        ],
+    ])
+    ->setCustomAddAction("/test")
+    ->setCustomEditAction("/admin");
+
+$dataDisplay->handleRequest($_POST ?? []);
+$dataDisplay->renderDataTable();
+```
+
+### ✅ Example a Simple Workflow With View Source(Link) and Action Button Modes(Default) 
+```php 
+$dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES);
+
+$dataDisplay
+    ->setClassFetchDataFunction("all")
+    ->setAddDialogSize("modal-fullscreen")
+    ->setEditDialogSize("modal-fullscreen")
+    ->columnToBeAdded([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Product Name",
+        ],
+        "price" => [
+            "type" => "input",
+            "input_type" => "number",
+            "label" => 'Price ($)',
+        ],
+        "category_id" => [
+            "type" => "select",
+            "label" => "Category",
+            "options" => [],
+            "value_field" => "id",
+            "label_field" => "name",
+        ],
+    ])
+    ->columnsToBeEdited([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Name",
+        ],
+    ])
+    ->setViewDialogSize("modal-fullscreen")
+    ->setCustomViewFormHeader("Image")
+    ->setValuesToShowonModal([ "name" => [
+        "type" => "input",
+        "input_type" => "text",
+        "label" => "Name",
+    ],])
+    ->valuesToRender(["id", "name"])
+    ->searchable([
+        "name" => [
+            "type" => "input",
+            "input_type" => "text",
+            "label" => "Product Name",
+        ],
+        "price" => [
+            "type" => "input",
+            "input_type" => "number",
+            "label" => 'Price ($)',
+        ],
+    ])
+    ->setCustomAddAction("/test")
+    ->setCustomEditAction("/admin");
+
+$dataDisplay->handleRequest($_POST ?? []);
+$dataDisplay->renderDataTable();
+```
