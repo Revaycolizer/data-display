@@ -1134,6 +1134,7 @@ $dataDisplay
             "label" => "Name",
         ],
     ])
+     ->setViewLink("/test")
     ->setViewDialogSize("modal-fullscreen")
     ->setCustomViewFormHeader("Image")
     ->setValuesToShowonModal([ "name" => [
