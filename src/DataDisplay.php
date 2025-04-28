@@ -3,6 +3,7 @@
 namespace Revaycolizer\DataDisplay;
 
 use App\Types\ActionsButtonMode;
+use App\Types\DataDisplayModes;
 use App\Types\DataSourceType;
 use App\Types\ViewSource;
 use InvalidArgumentException;
@@ -51,7 +52,7 @@ class DataDisplay
     private $columnsBeforeActions = [];
     private $columnsAfterActions = [];
     private $classFetchDataFunction = "all";
-    private $mode = "default";
+    private $mode = DataDisplayModes::DEFAULT;
     private $addDialogSize;
     private $editDialogSize;
 
@@ -184,14 +185,8 @@ class DataDisplay
         return new self($entityManager, $entityName, $dataSource);
     }
 
-    public function setMode(string $mode)
+    public function setMode(DataDisplayModes $mode = DataDisplayModes::DEFAULT): self
     {
-        $modes = ["default", "report"];
-
-        if (!in_array($mode, $modes)) {
-            throw new InvalidArgumentException("Invalid mode: $mode");
-        }
-
         $this->mode = $mode;
         return $this;
     }
@@ -740,7 +735,7 @@ class DataDisplay
             echo "</form>";
         }
 
-        if ($this->mode === "default") {
+        if ($this->mode === DataDisplayModes::DEFAULT) {
             if ($this->canAdd) {
                 echo '<button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#' .
                     $addModalId .
@@ -777,7 +772,7 @@ class DataDisplay
             echo "<th>" . $this->beautifyColumnName($key) . "</th>";
         }
 
-        if ($this->mode === "default") {
+        if ($this->mode === DataDisplayModes::DEFAULT) {
             echo "<th>Actions</th>";
         }
 
@@ -833,7 +828,7 @@ class DataDisplay
                 echo "<td>" . $this->renderCustomColumn($conf, $row) . "</td>";
             }
 
-            if ($this->mode === "default") {
+            if ($this->mode === DataDisplayModes::DEFAULT) {
 
                 switch ($this->actionsButtonMode) {
                     case ActionsButtonMode::DEFAULT:

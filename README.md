@@ -57,7 +57,7 @@ $dataDisplay->setClassFetchDataFunction("all:param1,param2")
 By Default the mode is Default There is no Need to Set Mode
 
 ```php
- ->setMode("default")
+->setMode(DataDisplayModes::DEFAULT)
 ```
 
 ## Mode 2: Report
@@ -65,7 +65,7 @@ By Default the mode is Default There is no Need to Set Mode
 If mode is set to report it will remove the CRUD Buttons(Add,Edit & Delete)
 
 ```php
- ->setMode("report")
+ ->setMode(DataDisplayModes::REPORT)
 ```
 
 ### Action Button Modes
@@ -1044,7 +1044,7 @@ $dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES
 
 $dataDisplay
    ->setClassFetchDataFunction("all")
-   ->setMode("report")
+    ->setMode(DataDisplayModes::REPORT)
     ->columnToBeAdded([
         "name" => [
             "type" => "input",
