@@ -894,7 +894,7 @@ class DataDisplay
 
                         $link = $this->viewLink . $row['id'];
 
-                        $columnsToRenderonModal = empty($this->valuesToShowonModal) ? $this->valuesToRender : $this->valuesToShowonModal;
+                        $columnsToRenderonModal = empty($this->valuesToShowonModal) ? $this->columnsToAdd : $this->valuesToShowonModal;
 
                         switch ($this->viewSource) {
                             case ViewSource::LINK:
@@ -1139,7 +1139,7 @@ class DataDisplay
 
             ';
 
-        $columnsToRender = empty($this->valuesToShowonModal) ? $this->valuesToRender : $this->valuesToShowonModal;
+        $columnsToRender = empty($this->valuesToShowonModal) ? $this->columnsToAdd : $this->valuesToShowonModal;
         if (!$this->customViewFormRenderer) {
             echo '$("#' . $viewFormId . 'Body").empty();';
         }
