@@ -2,10 +2,21 @@
 
 namespace Revaycolizer\DataDisplay;
 
+use App\Helpers\ActionButtons;
+use App\Helpers\AddButton;
+use App\Helpers\ButtonsViewable;
+use App\Helpers\Form;
+use App\Helpers\Modals;
+use App\Helpers\Searchable;
+use App\Helpers\SweetAlertHandle;
+use App\Helpers\UiNoAccessButton;
 use App\Types\ActionsButtonMode;
+use App\Types\BootStrap;
 use App\Types\DataDisplayModes;
 use App\Types\DataSourceType;
+use App\Types\SweetAlert;
 use App\Types\ViewSource;
+use App\Types\Buttons;
 use InvalidArgumentException;
 
 class DataDisplay
@@ -66,6 +77,22 @@ class DataDisplay
 
     private $valuesToShowonModal = [];
 
+    private $bootstrap = BootStrap::V5;
+
+    private $sweetAlert = SweetAlert::V2;
+
+    private $buttonsViewable = [Buttons::ADD, Buttons::EDIT, Buttons::VIEW, Buttons::DELETE];
+
+    private $addAction;
+
+    private $editAction;
+
+    private $deleteAction;
+
+    private $deleteTitle = "Delete Record";
+
+    private $deleteMessage = "Are you sure you want to delete this record?";
+
     /**
      * @param 'doctrine'|'classes' $dataSource
      */
@@ -111,9 +138,61 @@ class DataDisplay
         return $this;
     }
 
+    public function setAddAction(string $action): self
+    {
+        $this->addAction = $action;
+        return $this;
+    }
+
+    public function setDeleteAction(string $action): self
+    {
+        $this->deleteAction = $action;
+        return $this;
+    }
+
+    public function setDeleteTitle(string $title): self
+    {
+        $this->deleteTitle = $title;
+        return $this;
+    }
+
+    public function setDeleteMessage(string $title): self
+    {
+        $this->deleteMessage = $title;
+        return $this;
+    }
+
+    public function setEditAction(string $action): self
+    {
+        $this->editAction = $action;
+        return $this;
+    }
+
     public function setViewLink($link): self
     {
         $this->viewLink = $link;
+        return $this;
+    }
+
+    public function setBootStrapVersion(BootStrap $bootstrap): self
+    {
+        $this->bootstrap = $bootstrap;
+        return $this;
+    }
+
+    /**
+     * @param Buttons[] $buttons
+     */
+    public function setButtonsViewable(array $buttons): self
+    {
+        $this->buttonsViewable = $buttons;
+        return $this;
+    }
+
+
+    public function setSweetAlertVersion(SweetAlert $sweetAlert): self
+    {
+        $this->sweetAlert = $sweetAlert;
         return $this;
     }
 
@@ -699,49 +778,18 @@ class DataDisplay
         $totalPages = $this->paginationEnabled
             ? ceil($totalRecords / $this->recordsPerPage)
             : 1;
-        if (!empty($this->searchableColumns)) {
-            echo '<form method="POST" class="row g-3 mb-3">';
 
-            foreach ($this->searchableColumns as $column => $config) {
-                $label = $config["label"] ?? ucfirst($column);
-                $value = htmlspecialchars($_POST[$column] ?? "");
+        Searchable::show($this->bootstrap, $this->searchableColumns);
 
-                if ($config["type"] === "input") {
-                    echo "<div class='col-auto'>
-                              <label for='$column' class='form-label'>$label</label>
-                              <input type='text' class='form-control form-control-sm' name='$column' id='$column' value='" .
-                        htmlspecialchars($value) .
-                        "'>
-                          </div>";
-                } elseif ($config["type"] === "select") {
-                    echo "<div class='col-auto'>
-                              <label for='$column' class='form-label'>$label</label>
-                              <select name='$column' id='$column' class='form-control form-control-sm'>
-                                  <option value=''>-- Select --</option>";
-                    foreach ($config["options"] as $opt) {
-                        $val = $opt[$config["value_field"]];
-                        $text = $opt[$config["label_field"]];
-                        $selected = $value == $val ? "selected" : "";
-                        echo "<option value='$val' $selected>$text</option>";
-                    }
-                    echo "</select></div>";
+        if (ButtonsViewable::add($this->buttonsViewable)) {
+            if ($this->mode === DataDisplayModes::DEFAULT) {
+                if ($this->canAdd) {
+
+                    AddButton::show($this->bootstrap, $this->addButtonLabel, $addModalId);
+
+                } else {
+                    UiNoAccessButton::show($this->bootstrap, $this->addButtonLabel);
                 }
-            }
-
-            echo '<div class="col-auto align-self-end">';
-            echo '<button type="submit" class="btn btn-primary">Search</button>';
-            echo "</div>";
-
-            echo "</form>";
-        }
-
-        if ($this->mode === DataDisplayModes::DEFAULT) {
-            if ($this->canAdd) {
-                echo '<button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#' .
-                    $addModalId .
-                    '">' .
-                    htmlspecialchars($this->addButtonLabel) .
-                    "</button>";
             }
         }
 
@@ -832,96 +880,22 @@ class DataDisplay
 
                 switch ($this->actionsButtonMode) {
                     case ActionsButtonMode::DEFAULT:
-                        echo "<td>";
-                        if ($canEdit) {
-                            echo "<button class='btn btn-primary btn-sm editBtn' data-id='{$row["id"]}'";
-                            foreach ($this->columnsToEdit as $columnName => $config) {
-                                $value =
-                                    isset($row[$columnName]) &&
-                                    is_scalar($row[$columnName])
-                                        ? htmlspecialchars($row[$columnName])
-                                        : "";
-                                echo " data-$columnName='$value'";
-                            }
-                            echo ">Edit</button> ";
-                        }
                         $link = $this->viewLink . $row['id'];
 
                         $columnsToRenderonModal = empty($this->valuesToShowonModal) ? $this->valuesToRender : $this->valuesToShowonModal;
-                        switch ($this->viewSource) {
-                            case ViewSource::LINK:
-                                echo "<a href='{$link}' class='btn btn-success btn-sm' target='_blank'>View</a>";
-                                break;
-                            case ViewSource::MODAL:
-                                echo "<button class='btn btn-success btn-sm viewBtn' data-id='{$row["id"]}'";
-                                foreach ($columnsToRenderonModal as $columnName => $config) {
-                                    $value =
-                                        isset($row[$columnName]) &&
-                                        is_scalar($row[$columnName])
-                                            ? htmlspecialchars($row[$columnName])
-                                            : "";
-                                    echo " data-$columnName='$value'";
-                                }
-                                echo ">View</button>";
-                                break;
-                        }
 
-
-                        echo $canDelete ? "
-                      <button class='btn btn-danger btn-sm deleteBtn' data-id='{$row["id"]}'>Delete</button>
-                    </td>" : "</td>";
-
+                        ActionButtons::default($this->bootstrap, $link, $row['id'], $canEdit
+                            , $this->columnsToEdit, $this->viewSource, $columnsToRenderonModal, $canDelete, $row, $this->buttonsViewable);
                         break;
 
                     case ActionsButtonMode::DROPDOWN:
-                        echo "<td>";
-                        echo "<div class='btn btn-light dropdown hover-dropdown' role='button' data-bs-toggle='dropdown'>";
-                        echo "<a href='#' style='text-decoration: none !important;' class='ellipsis-trigger' aria-expanded='false'>";
-                        echo "&#8942;";
-                        echo "</a>";
-                        echo "<ul class='dropdown-menu'>";
-
-                        if ($canEdit) {
-                            echo "<li><a class='dropdown-item editBtn' href='#' data-id='{$row["id"]}'";
-                            foreach ($this->columnsToEdit as $columnName => $config) {
-                                $value = isset($row[$columnName]) && is_scalar($row[$columnName])
-                                    ? htmlspecialchars($row[$columnName])
-                                    : "";
-                                echo " data-$columnName='$value'";
-                            }
-                            echo ">Edit</a></li>";
-                        }
-
                         $link = $this->viewLink . $row['id'];
 
                         $columnsToRenderonModal = empty($this->valuesToShowonModal) ? $this->columnsToAdd : $this->valuesToShowonModal;
 
-                        switch ($this->viewSource) {
-                            case ViewSource::LINK:
-                                echo "<li><a class='dropdown-item' href='{$link}' data-id='{$row["id"]}'>View</a></li>";
-                                break;
-
-                            case ViewSource::MODAL:
-
-                                echo "<li><a class='dropdown-item viewBtn' href='#' data-id='{$row["id"]}'";
-
-                                foreach ($columnsToRenderonModal as $columnName => $config) {
-                                    $value =
-                                        isset($row[$columnName]) &&
-                                        is_scalar($row[$columnName])
-                                            ? htmlspecialchars($row[$columnName])
-                                            : "";
-                                    echo " data-$columnName='$value'";
-                                }
-                                echo ">View</a></li>";
-                                break;
-                        }
-
-                        echo $canDelete ? "<li><a class='dropdown-item deleteBtn' href='#' data-id='{$row["id"]}'>Delete</a></li>" : "";
-                        echo "</ul></div>";
-                        echo "</td>";
+                        ActionButtons::show($this->bootstrap, $link, $row['id'], $canEdit
+                            , $this->columnsToEdit, $this->viewSource, $columnsToRenderonModal, $canDelete, $row, $this->buttonsViewable);
                         break;
-
 
                 }
 
@@ -951,34 +925,10 @@ class DataDisplay
         $viewFormId = $this->tableId . "_viewForm";
 
         // --- Add Modal ---
-        echo '
-    <div class="modal fade" id="' .
-            $addModalId .
-            '" tabindex="-1" aria-labelledby="' .
-            $addModalId .
-            'Label" aria-hidden="true">
-            <div class="modal-dialog ' . $this->addDialogSize . '">
-        <div class="modal-content">
-          <form id="' .
-            $addFormId .
-            '" method="POST" action="' .
-            htmlspecialchars($this->customAddAction ?? "") .
-            '">
-            <input type="hidden" name="' .
-            ($this->customAddFormRenderer ? "token" : "csrf_token") .
-            '" value="' .
-            htmlspecialchars($this->token) .
-            '">
-            <input type="hidden" name="form_action" value="add">
-            <div class="modal-header">
-              <h5 class="modal-title" id="' .
-            $addModalId .
-            'Label">' .
-            htmlspecialchars($this->customAddFormHeader) .
-            '</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">';
+        Form::Addform($this->bootstrap, $addModalId, $this->addDialogSize, $addFormId,
+            $this->customAddAction ?? "", $this->customAddFormRenderer,
+            $this->token, $this->customAddFormHeader, $this->addAction
+        );
 
         if ($this->customAddFormRenderer) {
             call_user_func($this->customAddFormRenderer);
@@ -1016,40 +966,10 @@ class DataDisplay
     </div>';
 
         // --- Edit Modal ---
-        echo '
-    <div class="modal fade" id="' .
-            $editModalId .
-            '" tabindex="-1" aria-labelledby="' .
-            $editModalId .
-            'Label" aria-hidden="true">
-            <div class="modal-dialog ' . $this->editDialogSize . '">
-        <div class="modal-content">
-          <form id="' .
-            $editFormId .
-            '" method="POST" action="' .
-            htmlspecialchars($this->customEditAction ?? "") .
-            '">
-            <input type="hidden" name="' .
-            ($this->customEditFormRenderer ? "token" : "csrf_token") .
-            '" value="' .
-            htmlspecialchars($this->token) .
-            '">
-            <input type="hidden" id="' .
-            $editModalId .
-            'editId" name="id" value="">
-
-            <input type="hidden" name="form_action" value="edit">
-            <div class="modal-header">
-              <h5 class="modal-title" id="' .
-            $editModalId .
-            'Label">' .
-            $this->customEditFormHeader .
-            '</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="' .
-            $editFormId .
-            'Body">';
+        Form::editForm($this->bootstrap, $editModalId, $this->editDialogSize, $editFormId,
+            $this->customEditAction ?? "", $this->customEditFormRenderer
+            , $this->token, $this->customEditFormHeader, $this->editAction
+        );
 
         if (!$this->customEditFormRenderer) {
         } else {
@@ -1067,40 +987,8 @@ class DataDisplay
     </div>';
 
         // View Modal
-        echo '
-    <div class="modal fade" id="' .
-            $viewModalId .
-            '" tabindex="-1" aria-labelledby="' .
-            $viewModalId .
-            'Label" aria-hidden="true">
-            <div class="modal-dialog ' . $this->viewDialogSize . '">
-        <div class="modal-content">
-          <form id="' .
-            $viewFormId .
-            '" method="POST" action="' .
-            htmlspecialchars($this->customEditAction ?? "") .
-            '">
-            <input type="hidden" name="' .
-            ($this->customViewFormRenderer ? "token" : "csrf_token") .
-            '" value="' .
-            htmlspecialchars($this->token) .
-            '">
-            <input type="hidden" id="' .
-            $viewModalId .
-            'editId" name="id" value="">
-
-            <input type="hidden" name="form_action" value="edit">
-            <div class="modal-header">
-              <h5 class="modal-title" id="' .
-            $viewModalId .
-            'Label">' .
-            $this->customViewFormHeader .
-            '</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="' .
-            $viewFormId .
-            'Body">';
+        Form::viewForm($this->bootstrap, $viewModalId, $this->viewDialogSize, $viewFormId
+            , $this->customViewFormRenderer, $this->token, $this->customViewFormHeader);
 
         if (!$this->customViewFormRenderer) {
         } else {
@@ -1226,14 +1114,9 @@ class DataDisplay
             echo '$("#' . $viewModalId . 'viewId").val(id);';
         }
 
-        echo '
-            var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("' .
-            $viewModalId .
-            '"));
-            modal.show();
-        });
-        
-            $(".editBtn").click(function() {
+        Modals::showViewModal($this->bootstrap, $viewModalId);
+
+        echo '$(".editBtn").click(function() {
             var id = $(this).data("id");
 
             ';
@@ -1260,6 +1143,7 @@ class DataDisplay
                     ENT_QUOTES
                 );
                 echo "var $column = $(this).data('$column');";
+
                 if ($config["type"] === "input") {
                     $inputType = $config["input_type"] ?? "text";
                     echo '$("#' .
@@ -1324,58 +1208,10 @@ class DataDisplay
             echo '$("#' . $editModalId . 'editId").val(id);';
         }
 
+        Modals::showEditModal($this->bootstrap, $editModalId);
+
+        SweetAlertHandle::delete($this->sweetAlert, $this->deleteTitle, $this->deleteMessage, $this->token, $this->deleteAction);
         echo '
-            var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("' .
-            $editModalId .
-            '"));
-            modal.show();
-        });
-
-        $(".deleteBtn").click(function() {
-            var id = $(this).data("id");
-            Swal.fire({
-        title: "Are you sure?",
-        text: "You won\'t be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-                const form = $("<form>", {
-                    method: "POST",
-                    action: ""
-                });
-
-                form.append($("<input>", {
-                    type: "hidden",
-                    name: "form_action",
-                    value: "delete"
-                }));
-
-                form.append($("<input>", {
-                    type: "hidden",
-                    name: "id",
-                    value: id
-                }));
-
-                form.append($("<input>", {
-                    type: "hidden",
-                    name: "' .
-            ($this->customEditFormRenderer ? "token" : "csrf_token") .
-            '",
-                    value: "' .
-            $this->token .
-            '"
-                }));
-
-                $("body").append(form);
-                form.submit();
-            }
-            })
-        });
-    });
     </script>';
     }
 
@@ -1457,24 +1293,7 @@ class DataDisplay
         string $icon = "success"
     )
     {
-        echo '<script>
-        document.addEventListener("DOMContentLoaded", function () {
-            Swal.fire({
-                title: "' .
-            addslashes($title) .
-            '",
-                text: "' .
-            addslashes($message) .
-            '",
-                icon: "' .
-            $icon .
-            '",
-                confirmButtonText: "OK"
-            }).then(function () {
-
-            });
-        });
-    </script>';
+        SweetAlertHandle::handle($this->sweetAlert, $title, $message, $icon);
     }
 
     public function generateCsrfToken($length = 32)

@@ -110,6 +110,62 @@ It takes a boolean value
 $dataTable->setAddPermission(true);
 ```
 
+## Set Actions Button(Add,Edit,Delete)
+
+By default All Buttons are enabled
+
+```php
+use App\Types\Buttons;
+
+$dataTable->setButtonsViewable([Buttons::VIEW,Buttons::EDIT]);
+```
+## Add Action using Input
+```php
+$dataTable->setAddAction("Yooo")
+```
+
+## Edit Action Using Input
+```php
+$dataTable->setEditAction("Yooo")
+```
+
+## Delete Action
+```php
+$dataTable->setDeleteAction("Yooo")
+```
+
+## SweetAlert Delete Title
+
+```php
+$dataTable->setDeleteTitle("Delete")
+```
+
+## SweetAlert Delete Message
+
+```php
+ ->setDeleteMessage("Are you sure you want to delete this item?")
+```
+
+## Set BootStrap Version
+
+By Default It uses BootStrap 5
+
+```php
+use App\Types\Buttons;
+
+$dataTable->setBootStrapVersion(BootStrap::V3)
+```
+
+## Set SweetAlert Vision
+
+By default it Uses SweetAlert 2
+
+```php
+use App\Types\SweetAlert;
+
+ $dataTable->setSweetAlertVersion(SweetAlert::V2)
+```
+
 ## set Datatable Buttons
 
 ```php
