@@ -806,13 +806,24 @@ class DataDisplay
         foreach ($columnsToRender as $column) {
             if (stripos($column, " as ") !== false) {
                 $parts = preg_split("/\s+as\s+/i", $column);
-                $label = $this->beautifyColumnName($parts[1]);
+                $alias = trim($parts[1]);
+
+                if (strtolower($alias) === 'id') {
+                    continue;
+                }
+
+                $label = $this->beautifyColumnName($alias);
             } else {
                 $dotSplit = explode(".", $column);
-                $lastPart = end($dotSplit);
+                $lastPart = trim(end($dotSplit));
+
+                if (strtolower($lastPart) === 'id') {
+                    continue;
+                }
 
                 $label = $this->beautifyColumnName($lastPart);
             }
+
             echo "<th>$label</th>";
         }
 
@@ -843,9 +854,16 @@ class DataDisplay
                 if (stripos($column, " as ") !== false) {
                     $parts = preg_split("/\s+as\s+/i", $column);
                     $key = trim($parts[1]);
+                    if (strtolower($key) === 'id') {
+                        continue;
+                    }
                 } else {
                     $dotSplit = explode(".", $column);
                     $key = end($dotSplit);
+
+                    if (strtolower($key) === 'id') {
+                        continue;
+                    }
                 }
 
                 echo "<td>{$row[$key]}</td>";
