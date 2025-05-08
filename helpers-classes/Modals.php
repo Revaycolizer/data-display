@@ -23,6 +23,7 @@ class Modals
             case BootStrap::V3:
                 echo '
             $("#' . $viewModalId . '").modal("show");
+            });
             ';
                 break;
 
@@ -47,6 +48,7 @@ class Modals
                 case BootStrap::V3:
                     echo '
             $("#' . $editModalId . '").modal("show");
+            });
             ';
                     break;
         }
