@@ -19,7 +19,7 @@ class AddButton
                 break;
 
             case BootStrap::V3:
-                echo '<button type="button" class="btn btn-success" style="margin-bottom: 15px;" data-toggle="modal" data-target="#' .
+                echo '<button type="button" class="btn btn-success" style="margin-bottom: 5px;" data-toggle="modal" data-target="#' .
                     $modalId .
                     '">' .
                     htmlspecialchars($buttonLabel) .

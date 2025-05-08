@@ -1028,7 +1028,8 @@ class DataDisplay
             });
         }
 
-        $(".viewBtn").click(function() {
+        $(".viewBtn").click(function(e) {
+        e.preventDefault();
             var id = $(this).data("id");
 
             ';
@@ -1122,7 +1123,8 @@ class DataDisplay
 
         Modals::showViewModal($this->bootstrap, $viewModalId);
 
-        echo '$(".editBtn").click(function() {
+        echo '$(".editBtn").click(function(e) {
+            e.preventDefault();
             var id = $(this).data("id");
 
             ';

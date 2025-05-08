@@ -58,7 +58,8 @@ class SweetAlertHandle
         switch ($sweetAlert) {
             case SweetAlert::V1:
                 echo '
-$(".deleteBtn").click(function() {
+$(".deleteBtn").click(function(e) {
+e.preventDefault();
     var id = $(this).data("id");
 
     swal({
@@ -117,7 +118,8 @@ $(".deleteBtn").click(function() {
 
             case SweetAlert::V2:
                 echo '
-$(".deleteBtn").click(function() {
+$(".deleteBtn").click(function(e) {
+e.preventDefault();
     var id = $(this).data("id");
 
     Swal.fire({

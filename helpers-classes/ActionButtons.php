@@ -120,7 +120,7 @@ class ActionButtons
                 }
 
                 echo "</ul>";
-                echo "</div>";  
+                echo "</div>";
                 echo "</td>";
                 break;
 
