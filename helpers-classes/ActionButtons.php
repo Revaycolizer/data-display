@@ -68,12 +68,16 @@ class ActionButtons
 
             case BootStrap::V3:
                 echo "<td>";
-                echo "<div class='btn btn-default dropdown-toggle' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>";
-                echo "<a href='#' style='text-decoration: none !important;' class='ellipsis-trigger'>";
-                echo "&#8942;";
-                echo "</a>";
-                echo "</div>";
+
+                echo "<div class='dropdown'>";
+
+                echo "<button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>";
+                echo "  &#8942;";
+                echo "</button>";
+
+
                 echo "<ul class='dropdown-menu'>";
+
 
                 if(ButtonsViewable::edit($buttonsViewable)) {
                     if ($canEdit) {
@@ -110,12 +114,16 @@ class ActionButtons
                         break;
                 }
 
+
                 if(ButtonsViewable::delete($buttonsViewable)) {
                     echo $canDelete ? "<li><a class='deleteBtn' href='#' data-id='{$id}'>Delete</a></li>" : "";
                 }
+
                 echo "</ul>";
+                echo "</div>";  
                 echo "</td>";
                 break;
+
 
         }
 }
