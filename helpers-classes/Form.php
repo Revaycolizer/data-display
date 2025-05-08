@@ -264,4 +264,64 @@ class Form
         }
 
     }
+
+    public static function AddFormFooter(BootStrap $bootStrap)
+    {
+        switch ($bootStrap) {
+
+            case BootStrap::V5:
+                echo '  </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </form>
+            </div>
+          </div>
+        </div>';
+                break;
+
+            case BootStrap::V3:
+                echo '  </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </form>
+        </div>
+      </div>
+    </div>';
+                break;
+        }
+
+    }
+
+    public static function EditFormFooter(BootStrap $bootStrap)
+    {
+        switch ($bootStrap) {
+            case BootStrap::V5:
+                echo '  </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Save changes</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+              </form>
+            </div>
+          </div>
+        </div>';
+                break;
+
+            case BootStrap::V3:
+                        echo '  </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Save changes</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>';
+                break;
+        }
+    }
 }

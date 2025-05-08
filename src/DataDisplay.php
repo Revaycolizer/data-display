@@ -973,15 +973,7 @@ class DataDisplay
             }
         }
 
-        echo '  </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Add</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>';
+        Form::AddFormFooter($this->bootstrap);
 
         // --- Edit Modal ---
         Form::editForm($this->bootstrap, $editModalId, $this->editDialogSize, $editFormId,
@@ -994,15 +986,7 @@ class DataDisplay
             call_user_func($this->customEditFormRenderer);
         }
 
-        echo '  </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Save changes</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>';
+       Form::EditFormFooter($this->bootstrap);
 
         // View Modal
         Form::viewForm($this->bootstrap, $viewModalId, $this->viewDialogSize, $viewFormId
