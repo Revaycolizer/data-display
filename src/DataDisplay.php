@@ -1014,6 +1014,10 @@ class DataDisplay
         var tableId = "#' .
             $this->tableId .
             '";
+            
+              if ($.fn.DataTable.isDataTable(tableId)) {
+                $(tableId).DataTable().clear().destroy();
+            }
 
         if ($(tableId).length) {
             $(tableId).DataTable({
