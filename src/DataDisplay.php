@@ -15,6 +15,7 @@ use App\Types\ActionsButtonMode;
 use App\Types\BootStrap;
 use App\Types\DataDisplayModes;
 use App\Types\DataSourceType;
+use App\Types\DialogSizes;
 use App\Types\SweetAlert;
 use App\Types\ViewSource;
 use App\Types\Buttons;
@@ -65,10 +66,10 @@ class DataDisplay
     private $columnsAfterActions = [];
     private $classFetchDataFunction = "all";
     private $mode = DataDisplayModes::DEFAULT;
-    private $addDialogSize;
-    private $editDialogSize;
+    private $addDialogSize='modal-fullscreen';
+    private $editDialogSize='modal-fullscreen';
 
-    private $viewDialogSize;
+    private $viewDialogSize='modal-fullscreen';
 
     private $actionsButtonMode = ActionsButtonMode::DEFAULT;
 
@@ -224,21 +225,21 @@ class DataDisplay
         return $this;
     }
 
-    public function setAddDialogSize(string $addDialogSize)
+    public function setAddDialogSize(DialogSizes $addDialogSize)
     {
-        $this->addDialogSize = $addDialogSize;
+        $this->addDialogSize = $addDialogSize->value;
         return $this;
     }
 
-    public function setEditDialogSize(string $editDialogSize)
+    public function setEditDialogSize(DialogSizes $editDialogSize)
     {
-        $this->editDialogSize = $editDialogSize;
+        $this->editDialogSize = $editDialogSize->value;
         return $this;
     }
 
-    public function setViewDialogSize(string $viewDialogSize)
+    public function setViewDialogSize(DialogSizes $viewDialogSize)
     {
-        $this->viewDialogSize = $viewDialogSize;
+        $this->viewDialogSize = $viewDialogSize->value;
         return $this;
     }
 

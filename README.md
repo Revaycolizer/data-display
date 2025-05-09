@@ -478,13 +478,13 @@ Where dataTable is the id of datatable
 ## Add Dialog Size
 
 ```php
-->setAddDialogSize("modal-fullscreen")
+->setAddDialogSize(DialogSizes::LARGE)
 ```
 
 ## Edit Dialog Size
 
 ```php
-->setEditDialogSize("modal-fullscreen")
+->setEditDialogSize(DialogSizes::LARGE)
 ```
 
 ## Actions button Mode
@@ -534,7 +534,7 @@ Where dataTable is the id of datatable
 ## View Dialog Size
 
 ```php
-->setViewDialogSize("modal-fullscreen")
+->setViewDialogSize(DialogSizes::LARGE)
 ```
 
 ## Enable Search
@@ -1143,8 +1143,8 @@ $dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES
 
 $dataDisplay
    ->setClassFetchDataFunction("all")
-   ->setAddDialogSize("modal-fullscreen")
-   ->setEditDialogSize("modal-fullscreen")
+   ->setAddDialogSize(DialogSizes::LARGE)
+   ->setEditDialogSize(DialogSizes::LARGE)
     ->columnToBeAdded([
         "name" => [
             "type" => "input",
@@ -1182,8 +1182,8 @@ $dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES
 
 $dataDisplay
     ->setClassFetchDataFunction("all")
-    ->setAddDialogSize("modal-fullscreen")
-    ->setEditDialogSize("modal-fullscreen")
+    ->setAddDialogSize(DialogSizes::LARGE)
+    ->setEditDialogSize(DialogSizes::LARGE)
     ->columnToBeAdded([
         "name" => [
             "type" => "input",
@@ -1223,8 +1223,8 @@ $dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES
 
 $dataDisplay
     ->setClassFetchDataFunction("all")
-    ->setAddDialogSize("modal-fullscreen")
-    ->setEditDialogSize("modal-fullscreen")
+    ->setAddDialogSize(DialogSizes::LARGE)
+    ->setEditDialogSize(DialogSizes::LARGE)
     ->columnToBeAdded([
         "name" => [
             "type" => "input",
@@ -1253,7 +1253,7 @@ $dataDisplay
     ])
     ->setActionsButtonMode(ActionsButtonMode::DROPDOWN)
     ->setViewSource(ViewSource::MODAL)
-    ->setViewDialogSize("modal-fullscreen")
+    ->setViewDialogSize(DialogSizes::LARGE)
     ->setCustomViewFormHeader("Image")
     ->setValuesToShowonModal([ "name" => [
         "type" => "input",
@@ -1287,8 +1287,8 @@ $dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES
 
 $dataDisplay
     ->setClassFetchDataFunction("all")
-    ->setAddDialogSize("modal-fullscreen")
-    ->setEditDialogSize("modal-fullscreen")
+    ->setAddDialogSize(DialogSizes::LARGE)
+    ->setEditDialogSize(DialogSizes::LARGE)
     ->columnToBeAdded([
         "name" => [
             "type" => "input",
@@ -1316,7 +1316,7 @@ $dataDisplay
         ],
     ])
      ->setViewLink("/test=")
-    ->setViewDialogSize("modal-fullscreen")
+    ->setViewDialogSize(DialogSizes::LARGE)
     ->setCustomViewFormHeader("Image")
     ->setValuesToShowonModal([ "name" => [
         "type" => "input",
@@ -1350,8 +1350,8 @@ $dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES
 
 $dataDisplay
     ->setClassFetchDataFunction("all")
-    ->setAddDialogSize("modal-fullscreen")
-    ->setEditDialogSize("modal-fullscreen")
+    ->setAddDialogSize(DialogSizes::LARGE)
+    ->setEditDialogSize(DialogSizes::LARGE)
     ->columnToBeAdded([
         "name" => [
             "type" => "input",
@@ -1379,7 +1379,7 @@ $dataDisplay
         ],
     ])
     ->setViewLink("/test/")
-    ->setViewDialogSize("modal-fullscreen")
+    ->setViewDialogSize(DialogSizes::LARGE)
     ->setCustomViewFormHeader("Image")
     ->setValuesToShowonModal([ "name" => [
         "type" => "input",
@@ -1419,8 +1419,8 @@ $dataDisplay = DataDisplay::create(null, Category::class,DataSourceType::CLASSES
 
 $dataDisplay
     ->setClassFetchDataFunction("all")
-    ->setAddDialogSize("modal-fullscreen")
-    ->setEditDialogSize("modal-fullscreen")
+    ->setAddDialogSize(DialogSizes::LARGE)
+    ->setEditDialogSize(DialogSizes::LARGE)
     ->columnToBeAdded([
         "name" => [
             "type" => "input",
@@ -1449,7 +1449,7 @@ $dataDisplay
     ])
 
     ->setViewLink("/test/")
-    ->setViewDialogSize("modal-fullscreen")
+    ->setViewDialogSize(DialogSizes::LARGE)
     ->setCustomViewFormHeader("Image")
     ->setValuesToShowonModal([ "name" => [
         "type" => "input",
