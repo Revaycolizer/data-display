@@ -5,6 +5,7 @@ namespace Revaycolizer\DataDisplay;
 use App\Helpers\ActionButtons;
 use App\Helpers\AddButton;
 use App\Helpers\ButtonsViewable;
+use App\Helpers\DataTableScript;
 use App\Helpers\Form;
 use App\Helpers\Modals;
 use App\Helpers\Searchable;
@@ -93,6 +94,8 @@ class DataDisplay
 
     private $deleteMessage = "Are you sure you want to delete this record?";
 
+    private $delayDataTable = false;
+
     /**
      * @param 'doctrine'|'classes' $dataSource
      */
@@ -147,6 +150,12 @@ class DataDisplay
     public function setDeleteAction(string $action): self
     {
         $this->deleteAction = $action;
+        return $this;
+    }
+
+    public function setDelayDataTable(bool $delayDataTable): self
+    {
+        $this->delayDataTable = $delayDataTable;
         return $this;
     }
 
@@ -848,7 +857,7 @@ class DataDisplay
                 $row = call_user_func($this->rowDataTransformer, $row);
             }
             echo "<tr>";
-            echo "<td>$index</td>";
+            echo "<td style='width: 1%; white-space: nowrap;'>$index</td>";
 
             foreach ($columnsToRender as $column) {
                 if (stripos($column, " as ") !== false) {
@@ -986,7 +995,7 @@ class DataDisplay
             call_user_func($this->customEditFormRenderer);
         }
 
-       Form::EditFormFooter($this->bootstrap);
+        Form::EditFormFooter($this->bootstrap);
 
         // View Modal
         Form::viewForm($this->bootstrap, $viewModalId, $this->viewDialogSize, $viewFormId
@@ -1014,19 +1023,8 @@ class DataDisplay
         var tableId = "#' .
             $this->tableId .
             '";
-            
-              if ($.fn.DataTable.isDataTable(tableId)) {
-                $(tableId).DataTable().clear().destroy();
-            }
 
-        if ($(tableId).length) {
-            $(tableId).DataTable({
-                dom: "Bfrtip",
-                buttons: ' .
-            json_encode($this->generateDataTableButtons()) .
-            '
-            });
-        }
+      ' . DataTableScript::render($this->tableId, $this->delayDataTable, $this->generateDataTableButtons()) . '
 
         $(".viewBtn").click(function(e) {
         e.preventDefault();

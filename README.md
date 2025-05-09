@@ -166,6 +166,11 @@ use App\Types\SweetAlert;
  $dataTable->setSweetAlertVersion(SweetAlert::V2)
 ```
 
+## For those Getting DataTable Initialization Error
+```php
+$dataTable->setDelayDataTable(true)
+```
+
 ## set Datatable Buttons
 
 ```php
