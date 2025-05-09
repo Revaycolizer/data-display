@@ -1322,6 +1322,7 @@ $dataDisplay
         "type" => "input",
         "input_type" => "text",
         "label" => "Name",
+        "required" => true,
     ],])
     ->valuesToRender(["id", "name"])
     ->searchable([
@@ -1329,11 +1330,13 @@ $dataDisplay
             "type" => "input",
             "input_type" => "text",
             "label" => "Product Name",
+            "required" => true,
         ],
         "price" => [
             "type" => "input",
             "input_type" => "number",
             "label" => 'Price ($)',
+            "required" => true,
         ],
     ])
     ->setCustomAddAction("/test")
@@ -1357,11 +1360,13 @@ $dataDisplay
             "type" => "input",
             "input_type" => "text",
             "label" => "Product Name",
+            "required" => true,
         ],
         "price" => [
             "type" => "input",
             "input_type" => "number",
             "label" => 'Price ($)',
+            "required" => true,
         ],
         "category_id" => [
             "type" => "select",
@@ -1369,6 +1374,7 @@ $dataDisplay
             "options" => [],
             "value_field" => "id",
             "label_field" => "name",
+            "required" => true,
         ],
     ])
     ->columnsToBeEdited([
@@ -1376,6 +1382,7 @@ $dataDisplay
             "type" => "input",
             "input_type" => "text",
             "label" => "Name",
+            "required" => true,
         ],
     ])
     ->setViewLink("/test/")
@@ -1398,11 +1405,13 @@ $dataDisplay
             "type" => "input",
             "input_type" => "text",
             "label" => "Product Name",
+            "required" => true,
         ],
         "price" => [
             "type" => "input",
             "input_type" => "number",
             "label" => 'Price ($)',
+            "required" => true,
         ],
     ])
     ->setCustomAddAction("/test")
@@ -1426,11 +1435,13 @@ $dataDisplay
             "type" => "input",
             "input_type" => "text",
             "label" => "Product Name",
+            "required" => true,
         ],
         "price" => [
             "type" => "input",
             "input_type" => "number",
             "label" => 'Price ($)',
+            "required" => true,
         ],
         "category_id" => [
             "type" => "select",
@@ -1438,6 +1449,7 @@ $dataDisplay
             "options" => [],
             "value_field" => "id",
             "label_field" => "name",
+            "required" => true,
         ],
     ])
     ->columnsToBeEdited([
@@ -1445,6 +1457,7 @@ $dataDisplay
             "type" => "input",
             "input_type" => "text",
             "label" => "Name",
+            "required" => true,
         ],
     ])
 

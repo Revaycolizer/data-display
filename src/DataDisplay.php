@@ -963,16 +963,19 @@ class DataDisplay
         } else {
             foreach ($this->columnsToAdd as $column => $config) {
                 $label = $config["label"] ?? ucfirst($column);
+                $required = !empty($config["required"]) ? "required" : "";
                 if ($config["type"] === "input") {
                     $inputType = $config["input_type"] ?? "text";
+
                     echo "<div class='mb-3'>
                         <label for='$column' class='form-label'>$label</label>
-                        <input type='$inputType' class='form-control' id='$column' name='$column' required>
+                        <input type='$inputType' class='form-control' id='$column' name='$column' $required>
                       </div>";
                 } elseif ($config["type"] === "select") {
                     echo "<div class='mb-3'>
                         <label for='$column' class='form-label'>$label</label>
-                        <select class='form-control' id='$column' name='$column' required>";
+                        <select class='form-control' id='$column' name='$column' $required>";
+                    echo "<option value='' disabled selected>Select $label</option>";
                     foreach ($config["options"] as $option) {
                         $value = $option[$config["value_field"]] ?? $option;
                         $label = $option[$config["label_field"]] ?? $option;
@@ -1051,6 +1054,7 @@ class DataDisplay
         } else {
             foreach ($columnsToRender as $column => $config) {
                 $label = $config["label"] ?? ucfirst($column);
+                $required = !empty($config["required"]) ? "required" : "";
                 $selectLabel = htmlspecialchars(
                     $config["label"] ?? ucfirst($column),
                     ENT_QUOTES
@@ -1058,6 +1062,7 @@ class DataDisplay
                 echo "var $column = $(this).data('$column');";
                 if ($config["type"] === "input") {
                     $inputType = $config["input_type"] ?? "text";
+
                     echo '$("#' .
                         $viewFormId .
                         'Body").append(
@@ -1075,7 +1080,7 @@ class DataDisplay
                         $column .
                         '" value="` + ' .
                         $column .
-                        ' + `" required>
+                        ' + `" ' . $required . '>
                     </div>`
                 );';
                 } elseif ($config["type"] === "select") {
@@ -1106,7 +1111,7 @@ class DataDisplay
                         $column .
                         '" name="' .
                         $column .
-                        '" required>` + options + `</select>
+                        '" ' . $required . '>` + options + `</select>
                     </div>`
                 );
                 $("#' .
@@ -1145,6 +1150,7 @@ class DataDisplay
         } else {
             foreach ($this->columnsToEdit as $column => $config) {
                 $label = $config["label"] ?? ucfirst($column);
+                $required = !empty($config["required"]) ? "required" : "";
                 $selectLabel = htmlspecialchars(
                     $config["label"] ?? ucfirst($column),
                     ENT_QUOTES
@@ -1170,7 +1176,7 @@ class DataDisplay
                         $column .
                         '" value="` + ' .
                         $column .
-                        ' + `" required>
+                        ' + `" ' . $required . '>
                     </div>`
                 );';
                 } elseif ($config["type"] === "select") {
@@ -1201,7 +1207,7 @@ class DataDisplay
                         $column .
                         '" name="' .
                         $column .
-                        '" required>` + options + `</select>
+                        '" ' . $required . '>` + options + `</select>
                     </div>`
                 );
                 $("#' .
