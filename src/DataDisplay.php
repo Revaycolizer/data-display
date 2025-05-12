@@ -971,7 +971,17 @@ class DataDisplay
                         <label for='$column' class='form-label'>$label</label>
                         <input type='$inputType' class='form-control' id='$column' name='$column' $required>
                       </div>";
-                } elseif ($config["type"] === "select") {
+                }  elseif ($config["type"] === "text-area") {
+
+                    $rows = $config["rows"] ?? 4;
+                    $cols = $config["cols"] ?? "";
+                    echo "<div class='mb-3'>
+                <label for='$column' class='form-label'>$label</label>
+                <textarea class='form-control' id='$column' name='$column' rows='$rows' $required></textarea>
+              </div>";
+                }
+
+                elseif ($config["type"] === "select") {
                     echo "<div class='mb-3'>
                         <label for='$column' class='form-label'>$label</label>
                         <select class='form-control' id='$column' name='$column' $required>";
@@ -1083,7 +1093,36 @@ class DataDisplay
                         ' + `" ' . $required . '>
                     </div>`
                 );';
-                } elseif ($config["type"] === "select") {
+                }
+                elseif ($config["type"] === "text-area") {
+                    $rows = $config["rows"] ?? 4;
+
+                                echo '$("#' .
+                                    $viewFormId .
+                                    'Body").append(
+                    `<div class="mb-3">
+                        <label for="' .
+                                    $column .
+                                    '" class="form-label">' .
+                                    $label .
+                                    '</label>
+                        <textarea class="form-control" id="' .
+                                    $column .
+                                    '" name="' .
+                                    $column .
+                                    '" rows="' .
+                                    $rows .
+                                    '" ' .
+                                    $required .
+                                    '>` + ' .
+                                    $column .
+                                    ' + `</textarea>
+                    </div>`
+                );';
+                }
+
+
+                elseif ($config["type"] === "select") {
                     echo "var selectedVal = " . $column . ";";
                     echo "var options = `";
                     foreach ($config["options"] as $option) {
@@ -1179,7 +1218,37 @@ class DataDisplay
                         ' + `" ' . $required . '>
                     </div>`
                 );';
-                } elseif ($config["type"] === "select") {
+                }
+
+                elseif ($config["type"] === "text-area") {
+                    $rows = $config["rows"] ?? 4;
+
+                    echo '$("#' .
+                        $editFormId .
+                        'Body").append(
+                    `<div class="mb-3">
+                        <label for="' .
+                        $column .
+                        '" class="form-label">' .
+                        $label .
+                        '</label>
+                        <textarea class="form-control" id="' .
+                        $column .
+                        '" name="' .
+                        $column .
+                        '" rows="' .
+                        $rows .
+                        '" ' .
+                        $required .
+                        '>` + ' .
+                        $column .
+                        ' + `</textarea>
+                    </div>`
+                );';
+                }
+
+
+                elseif ($config["type"] === "select") {
                     echo "var selectedVal = " . $column . ";";
                     echo "var options = `";
                     foreach ($config["options"] as $option) {
