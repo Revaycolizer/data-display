@@ -28,7 +28,7 @@ class Searchable
                             echo "<div class='col-auto'>
                               <label for='$column' class='form-label'>$label</label>
                               <select name='$column' id='$column' class='form-control form-control-sm'>
-                                  <option value=''>-- Select --</option>";
+                                  <option value=''>-- Select $label --</option>";
                             foreach ($config["options"] as $opt) {
                                 $val = $opt[$config["value_field"]];
                                 $text = $opt[$config["label_field"]];
@@ -63,7 +63,7 @@ class Searchable
                                 htmlspecialchars($value) . "'>";
                         } elseif ($config["type"] === "select") {
                             echo "<select name='$column' id='$column' class='form-control'>
-                    <option value=''>-- Select --</option>";
+                    <option value=''>-- Select $label--</option>";
                             foreach ($config["options"] as $opt) {
                                 $val = $opt[$config["value_field"]];
                                 $text = $opt[$config["label_field"]];
