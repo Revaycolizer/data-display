@@ -966,11 +966,18 @@ class DataDisplay
                 $required = !empty($config["required"]) ? "required" : "";
                 if ($config["type"] === "input") {
                     $inputType = $config["input_type"] ?? "text";
+                    $step = $config["step"] ?? null;
+                    $min = $config["min"] ?? null;
+                    $max = $config["max"] ?? null;
 
                     echo "<div class='mb-3'>
-                        <label for='$column' class='form-label'>$label</label>
-                        <input type='$inputType' class='form-control' id='$column' name='$column' $required>
-                      </div>";
+                <label for='$column' class='form-label'>$label</label>
+                <input type='$inputType' class='form-control' id='$column' name='$column' " .
+                        ($step ? "step='$step' " : "") .
+                        ($min ? "min='$min' " : "") .
+                        ($max ? "max='$max' " : "") .
+                        "$required>
+                         </div>";
                 }  elseif ($config["type"] === "text-area") {
 
                     $rows = $config["rows"] ?? 4;
@@ -1072,7 +1079,9 @@ class DataDisplay
                 echo "var $column = $(this).data('$column');";
                 if ($config["type"] === "input") {
                     $inputType = $config["input_type"] ?? "text";
-
+                    $step = isset($config['step']) ? 'step="' . $config['step'] . '" ' : '';
+                    $min = isset($config['min']) ? 'min="' . $config['min'] . '" ' : '';
+                    $max = isset($config['max']) ? 'max="' . $config['max'] . '" ' : '';
                     echo '$("#' .
                         $viewFormId .
                         'Body").append(
@@ -1090,7 +1099,9 @@ class DataDisplay
                         $column .
                         '" value="` + ' .
                         $column .
-                        ' + `" ' . $required . '>
+                        ' + `" ' .
+                        $step . $min . $max . $required
+                        . '>
                     </div>`
                 );';
                 }
@@ -1198,6 +1209,10 @@ class DataDisplay
 
                 if ($config["type"] === "input") {
                     $inputType = $config["input_type"] ?? "text";
+                    $step = isset($config['step']) ? 'step="' . $config['step'] . '" ' : '';
+                    $min = isset($config['min']) ? 'min="' . $config['min'] . '" ' : '';
+                    $max = isset($config['max']) ? 'max="' . $config['max'] . '" ' : '';
+
                     echo '$("#' .
                         $editFormId .
                         'Body").append(
@@ -1215,7 +1230,9 @@ class DataDisplay
                         $column .
                         '" value="` + ' .
                         $column .
-                        ' + `" ' . $required . '>
+                        ' + `" ' .
+                        $step . $min . $max . $required
+                        . '>
                     </div>`
                 );';
                 }
