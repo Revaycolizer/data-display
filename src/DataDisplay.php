@@ -8,6 +8,7 @@ use App\Helpers\ButtonsViewable;
 use App\Helpers\DataTableScript;
 use App\Helpers\Form;
 use App\Helpers\Modals;
+use App\Helpers\SampleDownloaderButton;
 use App\Helpers\Searchable;
 use App\Helpers\SweetAlertHandle;
 use App\Helpers\UiNoAccessButton;
@@ -97,6 +98,16 @@ class DataDisplay
 
     private $delayDataTable = false;
 
+    private $importDownloadLabel = "Download Template";
+
+    private $importTemplateName="template.xlsx";
+
+    private $importColumns=[];
+
+    private $importAction;
+
+    private $customImportAction;
+
     /**
      * @param 'doctrine'|'classes' $dataSource
      */
@@ -151,6 +162,35 @@ class DataDisplay
     public function setDeleteAction(string $action): self
     {
         $this->deleteAction = $action;
+        return $this;
+    }
+
+    public function setCustomImportAction(string $action): self
+    {
+        $this->customImportAction = $action;
+        return $this;
+    }
+
+    public function setImportAction(string $action): self
+    {
+        $this->importAction = $action;
+        return $this;
+    }
+    public function setImportDownloadLabel(string $label): self
+    {
+        $this->importDownloadLabel = $label;
+        return $this;
+    }
+
+    public function setImportTemplateName(string $name): self
+    {
+        $this->importTemplateName = $name;
+        return $this;
+    }
+
+    public function setImportColumns(array $columns): self
+    {
+        $this->importColumns= $columns;
         return $this;
     }
 
@@ -794,8 +834,16 @@ class DataDisplay
         if (ButtonsViewable::add($this->buttonsViewable)) {
             if ($this->mode === DataDisplayModes::DEFAULT) {
                 if ($this->canAdd) {
-
+                    echo '<div class="d-flex gap-2 align-items-start">';
                     AddButton::show($this->bootstrap, $this->addButtonLabel, $addModalId);
+
+                    if(!empty($this->importColumns)){
+                    SampleDownloaderButton::show($this->bootstrap,
+                        $this->importDownloadLabel,$this->customImportAction,
+                        $this->importAction, $this->importColumns,$this->importTemplateName);
+                    }
+
+                    echo '</div>';
 
                 } else {
                     UiNoAccessButton::show($this->bootstrap, $this->addButtonLabel);

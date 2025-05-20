@@ -414,6 +414,38 @@ Instead of using setEditButtonCondition You can opt to use setEditButtonConditio
     })
 ```
 
+### File Import and Template using Form Action
+Import DownloadLabel and Import TemplateName are Optional
+```php 
+    ->setImportDownloadLabel("Download Template")
+    ->setImportTemplateName("staff.xlsx")
+    ->setImportColumns(
+        [
+            ['name' => 'Name', 'type' => 'string', 'required' => true],
+            ['name' => 'Email', 'type' => 'string', 'required' => true],
+            ['name' => 'Age', 'type' => 'integer', 'required' => false],
+            ['name' => 'Date of Birth', 'type' => 'date', 'required' => false],
+        ]
+    )
+    ->setCustomImportAction("/test")
+```
+
+### File Import and Template using Input Action
+Import DownloadLabel and Import TemplateName are Optional
+```php 
+    ->setImportDownloadLabel("Download Template")
+    ->setImportTemplateName("staff.xlsx")
+    ->setImportColumns(
+        [
+            ['name' => 'Name', 'type' => 'string', 'required' => true],
+            ['name' => 'Email', 'type' => 'string', 'required' => true],
+            ['name' => 'Age', 'type' => 'integer', 'required' => false],
+            ['name' => 'Date of Birth', 'type' => 'date', 'required' => false],
+        ]
+    )
+    ->setImportAction("ImportStaff")
+```
+
 ## Custom Add Form
 
 ```php

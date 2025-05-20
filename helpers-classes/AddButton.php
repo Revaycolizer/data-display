@@ -11,11 +11,11 @@ class AddButton
         switch ($bootstrap) {
 
             case BootStrap::V5:
-                echo '<button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#' .
-                    $modalId .
-                    '">' .
+                echo '
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#' . $modalId . '">' .
                     htmlspecialchars($buttonLabel) .
-                    "</button>";
+                    '</button>
+            ';
                 break;
 
             case BootStrap::V3:
